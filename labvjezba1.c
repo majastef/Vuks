@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILE_DIDNT_OPEN_ERROR -1
+#define FILE_DIDNT_OPEN_ERROR (-1)
 #define MAX_FILE_NAME (256)
 
 typedef struct {
@@ -31,7 +31,7 @@ int main()
 	stud = (student*)malloc(br_stud * (sizeof(student)));
 	if (stud == NULL)
 	{
-		printf("Greöka pri alociranju memorije!");
+		printf("Gre≈°ka pri alociranju memorije!");
 	}
 
 	UcitajStudente((char *)"c:\\tmp\\student.txt", br_stud, stud);
@@ -48,7 +48,7 @@ void UcitajStudente(char* file, int broj, student* s)
 	f = fopen(file, "r");
 	if (f == NULL)
 	{
-		printf("Greöka pri otvaranju datoteke!");
+		printf("Gre≈°ka pri otvaranju datoteke!");
 		return;
 	}
 
