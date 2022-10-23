@@ -3,12 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define EXIT_SUCCESS (0)
 #define FILE_DIDNT_OPEN_ERROR (-1)
+#define DID_NOT_ALLOCATE (-2)
 #define MAX_FILE_NAME (256)
+#define MAX_LINE (1024)
 
 typedef struct {
-	char ime[15];
-	char prezime[15];
+	char ime[MAX_FILE_NAME];
+	char prezime[MAX_FILE_NAME];
 	int bodovi;
 }student;
 
@@ -18,38 +21,42 @@ void IspisiStudente(int , student*);
 
 int main()
 {
-	int br_stud;
+	int br_stud = 0;
 	student* stud = NULL;
 	char f[MAX_FILE_NAME] = { 0 };
 
-	//printf("Unesi ime datoteke: ");
-	//scanf(" %s", f);
+	printf("Unesi ime datoteke: ");
+	scanf(" %s", f);
 
-	//printf("Broj studenata u datoteci %s je %d", f, brojStudenata((char *)"student.txt"));
-
-	br_stud = brojStudenata((char *)"c:\\tmp\\student.txt");
+	br_stud = brojStudenata(f);
+	printf("Broj studenata u datoteci %s je %d", f, br_stud);
+	
 	stud = (student*)malloc(br_stud * (sizeof(student)));
+	
 	if (stud == NULL)
 	{
 		printf("Greška pri alociranju memorije!");
+		return DID_NOT_ALLOCATE;
 	}
 
-	UcitajStudente((char *)"c:\\tmp\\student.txt", br_stud, stud);
+	UcitajStudente(F, br_stud, stud);
 	IspisiStudente(br_stud, stud);
+	
 	free(stud);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
-void UcitajStudente(char* file, int broj, student* s)
+int UcitajStudente(char* file, int broj, student* s)
 {
-	int i;
+	int i = 0;
 	FILE* f = NULL;
 	f = fopen(file, "r");
+	
 	if (f == NULL)
 	{
 		printf("Greška pri otvaranju datoteke!");
-		return;
+		return FILE_DIDNT_OPEN_ERROR;
 	}
 
 	for (i = 0;i < broj;i++)
@@ -58,13 +65,14 @@ void UcitajStudente(char* file, int broj, student* s)
 	}
 
 	fclose(f);
-	return;
+	return EXIT_SUCCESS;
 
 }
 
 int brojStudenata(char* f) {
 	FILE* fp = NULL;
 	int count = 0;
+	char buffer[MAX_LINE] = {0};
 
 	fp = fopen(f, "r");
 	if (fp == NULL) {
@@ -72,22 +80,23 @@ int brojStudenata(char* f) {
 		return FILE_DIDNT_OPEN_ERROR;
 	}
 
-	while (!feof(fp)) {
-		if (fgetc(fp) == '\n')
+	while (!feof(fp)) 
+	{
+		fgets(buffer, 1024, fp);
+		if(strcmp("\n", buffer) != 0)
 			count++;
 	}
 
-	rewind(fp);
 	fclose(fp);
 
-	return (count -1);
+	return count;
 
 }
 
-void IspisiStudente(int broj, student* s)
+int IspisiStudente(int broj, student* s)
 {
-	int i;
+	int i = 0;
 	for (i = 0;i < broj;i++)
 		printf("Student: %s %s\n Apsolutni broj bodova: %d\n Relativni broj bodova: %f\n", (s + i)->ime, (s + i)->prezime, (s + i)->bodovi, ((double)(s + i)->bodovi / 50 * 100));
-	return;
+	return EXIT_SUCCESS;
 }
