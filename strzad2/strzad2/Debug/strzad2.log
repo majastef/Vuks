@@ -1,0 +1,2 @@
+﻿  strzad2.cpp
+LINK : fatal error LNK1104: cannot open file 'msvcprtd.lib'
