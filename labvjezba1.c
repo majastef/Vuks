@@ -82,7 +82,7 @@ int brojStudenata(char* f) {
 
 	while (!feof(fp)) 
 	{
-		fgets(buffer, 1024, fp);
+		fgets(buffer, MAX_LINE, fp);
 		if(strcmp("\n", buffer) != 0)
 			count++;
 	}
