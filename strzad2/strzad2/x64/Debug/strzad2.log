@@ -1,2 +1,0 @@
-﻿  strzad2.cpp
-x64\Debug\strzad2.obj : fatal error LNK1112: module machine type 'x86' conflicts with target machine type 'x64'
