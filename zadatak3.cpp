@@ -137,6 +137,7 @@ int main()
 			printf("Ta opcija ne postoji!\n");
 
 	}
+	return SUCCESS;
 }
 
 
