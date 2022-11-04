@@ -123,7 +123,6 @@ int main()
 			scanf(" %[^\n]", file);
 
 			IspisListeIzDatoteke(file, Head->Next);
-			IspisListe(Head->Next);
 			printf("\n");
 		}
 
@@ -368,7 +367,7 @@ int UpisUDatoteku(char* f, Pozicija P)
 
 	if (fp == NULL)
 	{
-		printf("Greška pri otvaranju datoteke.");
+		printf("GreÅ¡ka pri otvaranju datoteke.");
 		return FILE_DIDNT_OPEN_ERROR;
 	}
 
@@ -397,6 +396,7 @@ int IspisListeIzDatoteke(char* f, Pozicija P)
 	while (P != NULL)
 	{
 		fscanf(fp, "%s %s %d\n", P->ime, P->prezime, &P->godina);
+		printf("%s %s %d\n", P->ime, P->prezime, p->godina);
 		P = P->Next;
 	}
 
