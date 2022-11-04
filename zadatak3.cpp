@@ -41,6 +41,12 @@ int main()
 	char file[MAX] = { 0 };
 	Pozicija Head = NULL;
 	Head = (Pozicija)malloc(sizeof(osoba));
+	
+	if (NULL == Head) {
+		perror("Neki djava!");
+		return EXIT_FAILURE;
+	}
+	
 	Head->Next = NULL;
 
 	char opcija[MAX] = { 0 };
