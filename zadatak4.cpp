@@ -141,7 +141,12 @@ int insertSortList(int koef, int exp, Position P)
 		P = P->Next;
 
 	if (P->Next != NULL && P->Next->e == exp)
+	{
 		P->Next->c += koef;
+		if(P->Next->c == 0)
+			
+	}
+		
 
 	else
 	{
@@ -187,7 +192,7 @@ int addition(Position P1, Position P2, Position Z)
 		}
 	}
 
-	else if (P1 != NULL && P2 == NULL)
+	if (P1 != NULL && P2 == NULL)
 	{
 		while (P1 != NULL)
 		{
