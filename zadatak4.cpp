@@ -125,7 +125,7 @@ int insertSortList(int koef, int exp, Position P)
 
 	if (temp == NULL)
 	{
-		printf("Greska.");
+		printf("Greska u alociranju memorije.");
 		return ERROR;
 	}
 
