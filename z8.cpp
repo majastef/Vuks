@@ -66,7 +66,7 @@ int main()
 	while (strcmp(option, "h") != 0)
 	{
 		printf("a) Unos novog elementa\nb) Ispis inorder\nc) Ispis preorder\nd) Ispis postorder\ne) Ispis leve lorder\nf) Brisanje elementa\ng) Pronalazenje elementa\nh) Kraj!\n");
-		printf("Odaberi opciju:");
+		printf("\nOdaberi opciju:");
 		scanf(" %s", option);
 
 		if (strcmp(option, "a") == 0)
