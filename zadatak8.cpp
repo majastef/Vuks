@@ -22,69 +22,102 @@ int printPreOrder(Position);
 int printPostOrder(Position);
 int printLevelOrder(Position);
 Position deleteEl(Position, int);
+Position findEl(Position, int);
 Position findMax(Position);
 Position findMin(Position);
+int height(Position);
+int printThisLevel(Position, int);
+int deleteAll(Position);
 
 int main()
 {
 	char option[MAX] = { 0 };
 	int number = 0;
-	int element = 0;
 	Position root = NULL;
-	root = (Position)malloc(sizeof(tree));
-
-	if (NULL == root)
-	{
-		printf("Greska u alociranju memorije.");
-		return ERROR;
-	}
-
-	root->left = NULL;
-	root->right = NULL;
 
 	while (strcmp(option, "h") != 0)
 	{
-		printf("a) Unos novog elementa\nb) Ispis inorder\nc) Ispis preorder\nd) Ispis postorder\ne) Ispis leve lorder\nf) Brisanje elementa\ng) Pronalazenje elementa\nh) Kraj!\n");
-		printf("Odaberi opciju:");
+		printf("a) Unos novog elementa\nb) Ispis inorder\nc) Ispis preorder\nd) Ispis postorder\ne) Ispis leve lorder\nf) Brisanje elementa\ng) Pronalazenje elementa\nh) Kraj!");
+		printf("\nOdaberi opciju:");
 		scanf(" %s", option);
 
 		if (strcmp(option, "a") == 0)
 		{
+			Position Q = NULL;
+			Q = (Position)malloc(sizeof(tree));
+
+			if (NULL == Q)
+				return ERROR;
+
+			Q->right = NULL;
+			Q->left = NULL;
+
 			printf("Unesi broj:");
 			scanf("%d", &number);
 
-			Position El = NULL;
-			El = (Position)malloc(sizeof(tree));
-			El->br = number;
-			
-			root = insertNew(root, El);
+			Q->br = number;
+
+			root = insertNew(root, Q);
+			printf("\n");
 		}
 
 		else if (strcmp(option, "b") == 0)
 		{
 			printInOrder(root);
+			printf("\n");
 		}
 
 		else if (strcmp(option, "c") == 0)
 		{
 			printPreOrder(root);
+			printf("\n");
 		}
 
 		else if (strcmp(option, "d") == 0)
 		{
 			printPostOrder(root);
+			printf("\n");
 		}
 
 		else if (strcmp(option, "e") == 0)
 		{
 			printLevelOrder(root);
+			printf("\n");
 		}
 
-		else if (strcmp(option, "f"))
+		else if (strcmp(option, "f") == 0)
 		{
 			printf("Unesi broj koji zelis obrisati:");
-			scanf("%d", &element);
-			root = deleteEl(root, element);
+			scanf("%d", &number);
+			root = deleteEl(root, number);
+			printf("\n");
+		}
+
+		else if (strcmp(option, "g") == 0)
+		{
+			Position El = NULL;
+			printf("Unesite broj koji zelite pronaci:");
+			scanf("%d", &number);
+			El = findEl(root, number);
+
+			if (NULL == El)
+				printf("Element ne postoji.");
+			else
+				printf("Element postoji.");
+
+			printf("\n");
+		}
+
+		else if (strcmp(option, "h") == 0)
+		{
+			deleteAll(root);
+			printf("\nKraj!\n");
+			return SUCCESS;
+		}
+
+		else
+		{
+			printf("Ta opcija ne postoji.");
 		}
 	}
 
@@ -95,7 +128,7 @@ Position insertNew(Position P, Position Q)
 {
 	if (NULL == P)
 		return Q;
-	
+
 	if (P->br < Q->br)
 		P->right = insertNew(P->right, Q);
 	else if (P->br > Q->br)
@@ -112,7 +145,7 @@ int printInOrder(Position P)
 		return SUCCESS;
 
 	printInOrder(P->left);
-	printf("%d", P->br);
+	printf("%d ", P->br);
 	printInOrder(P->right);
 
 	return SUCCESS;
@@ -123,7 +156,7 @@ int printPreOrder(Position P)
 	if (NULL == P)
 		return SUCCESS;
 
-	printf("%d", P->br);
+	printf("%d ", P->br);
 	printInOrder(P->left);
 	printInOrder(P->right);
 
@@ -137,24 +170,82 @@ int printPostOrder(Position P)
 
 	printInOrder(P->left);
 	printInOrder(P->right);
-	printf("%d", P->br);
+	printf("%d ", P->br);
 
 	return SUCCESS;
 }
 
 int printLevelOrder(Position P)
 {
+	int h = height(P);
+	int i = 0;
+	for (i = h; i >= 1; i--)
+	{
+		printThisLevel(P, i);
+		printf("\n");
+	}
+		
 
+	return SUCCESS;
 }
 
-int findMax(Position P)
+int height(Position P)
 {
+	int Left = 0;
+	int Right = 0;
+	if (NULL == P)
+		return SUCCESS;
+	else
+	{
+		Left = height(P->left);
+		Right = height(P->right);
 
+		if (Left > Right)
+			return(Left + 1);
+		else
+			return(Right + 1);
+	}
 }
 
-int findMin(Position P)
+int printThisLevel(Position P, int level)
 {
+	if (NULL == P)
+		return SUCCESS;
+	if (1 == level)
+		printf("%d ", P->br);
+	else if (level > 1)
+	{
+		printThisLevel(P->left, level - 1);
+		printThisLevel(P->right, level - 1);
+	}
+}
 
+Position findMax(Position P)
+{
+	if (NULL == P)
+	{
+		return NULL;
+	}
+	else if (P->right == NULL)
+	{
+		return P;
+	}
+	else
+		return findMax(P->right);
+}
+
+Position findMin(Position P)
+{
+	if (NULL == P)
+	{
+		return NULL;
+	}
+	else if (P->left == NULL)
+	{
+		return P;
+	}
+	else
+		return findMin(P->left);
 }
 
 Position deleteEl(Position P, int el)
@@ -190,4 +281,29 @@ Position deleteEl(Position P, int el)
 	}
 
 	return P;
+}
+
+Position findEl(Position P, int el)
+{
+	if (NULL == P)
+		return NULL;
+
+	if (el < P->br)
+		return findEl(P->left, el);
+	else if (el > P->br)
+		return findEl(P->right, el);
+	else
+		return P;
+}
+
+int deleteAll(Position P)
+{
+	if (NULL == P)
+		return SUCCESS;
+
+	deleteAll(P->left);
+	deleteAll(P->right);
+	free(P);
+
+	return SUCCESS;
 }
