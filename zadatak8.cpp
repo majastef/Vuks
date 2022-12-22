@@ -37,9 +37,9 @@ int main()
 
 	while (strcmp(option, "h") != 0)
 	{
-		printf("a) Unos novog elementa\nb) Ispis inorder\nc) Ispis preorder\nd) Ispis postorder\ne) Ispis leve lorder\nf) Brisanje elementa\ng) Pronalazenje elementa\nh) Kraj!");
+		printf("a) Unos novog elementa\nb) Ispis inorder\nc) Ispis preorder\nd) Ispis postorder\ne) Ispis level order\nf) Brisanje elementa\ng) Pronalazenje elementa\nh) Kraj!\n");
 		printf("\nOdaberi opciju:");
-		scanf(" %s", option);
+		scanf(" %[^\n]", option);
 
 		if (strcmp(option, "a") == 0)
 		{
@@ -63,25 +63,45 @@ int main()
 
 		else if (strcmp(option, "b") == 0)
 		{
-			printInOrder(root);
+			if (NULL == root)
+				printf("Lista je prazna.\n");
+
+			else
+				printInOrder(root);
+
 			printf("\n");
 		}
 
 		else if (strcmp(option, "c") == 0)
 		{
-			printPreOrder(root);
+			if (NULL == root)
+				printf("Lista je prazna.\n");
+
+			else
+				printPreOrder(root);
+
 			printf("\n");
 		}
 
 		else if (strcmp(option, "d") == 0)
 		{
-			printPostOrder(root);
+			if (NULL == root)
+				printf("Lista je prazna.\n");
+
+			else
+				printPostOrder(root);
+
 			printf("\n");
 		}
 
 		else if (strcmp(option, "e") == 0)
 		{
-			printLevelOrder(root);
+			if (NULL == root)
+				printf("Lista je prazna.\n");
+
+			else 
+				printLevelOrder(root);
+
 			printf("\n");
 		}
 
@@ -101,9 +121,10 @@ int main()
 			El = findEl(root, number);
 
 			if (NULL == El)
-				printf("Element ne postoji.");
+				printf("Element ne postoji.\n");
+	
 			else
-				printf("Element postoji.");
+				printf("Element postoji.\n");
 
 			printf("\n");
 		}
@@ -117,7 +138,8 @@ int main()
 
 		else
 		{
-			printf("Ta opcija ne postoji.");
+			printf("Ta opcija ne postoji.\n");
+			printf("\n");
 		}
 	}
 
@@ -184,7 +206,7 @@ int printLevelOrder(Position P)
 		printThisLevel(P, i);
 		printf("\n");
 	}
-		
+
 
 	return SUCCESS;
 }
