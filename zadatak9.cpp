@@ -16,50 +16,37 @@ typedef struct tree
 	Position Right;
 };
 
-struct stackA;
-typedef struct stackA* PosA;
-typedef struct stackA
+struct stack;
+typedef struct stack* Pos;
+typedef struct stack
 {
 	int br;
-	PosA Next;
-};
-
-struct stackB;
-typedef struct stackB* PosB;
-typedef struct stackB
-{
-	int br;
-	PosB Next;
+	Pos Next;
 };
 
 Position insert(Position, Position);
 int printInOrder(Position);
 int replace(Position);
 int add(Position, int);
-int read(PosA, Position);
-int read(PosB, Position);
-int insertFile(char*, PosA);
-int insertFile(char*, PosB);
+int read(Pos, Position);
+int insertFile(char*, Pos);
 int deleteAllTree(Position);
-int deleteAllStack(PosA, PosB);
+int deleteAllStack(Pos);
 
 int main()
 {
 	char file_name[MAX] = { 0 };
 	Position Root = NULL;
-	PosA Head = NULL;
-	PosB Main = NULL;
-	Head = (PosA)malloc(sizeof(stackA));
-	Main = (PosB)malloc(sizeof(stackB));
+	Pos Head = NULL;
+	Head = (Pos)malloc(sizeof(stack));
 
-	if (NULL == Head || NULL == Main)
+	if (NULL == Head)
 	{
 		printf("Greska u alociranju memorije.");
 		return ERROR;
 	}
 
 	Head->Next = NULL;
-	Main->Next = NULL;
 
 	int i = 0;
 	int line[10] = { 2,5,7,8,11,1,4,2,3,7 };
@@ -91,17 +78,20 @@ int main()
 
 	insertFile(file_name, Head);
 
+	deleteAllStack(Head);
+
 	replace(Root);
 
-	read(Main, Root);
+	read(Head, Root);
 
 	printf("Unesi ime datoteke u koju zelis spremiti brojeve nakon drugog dijela zadatka:");
 	scanf(" %s", file_name);
 
-	insertFile(file_name, Main);
+	insertFile(file_name, Head);
 
 	deleteAllTree(Root);
-	deleteAllStack(Head, Main);
+	deleteAllStack(Head);
+	free(Head);
 
 	return SUCCESS;
 }
@@ -172,15 +162,15 @@ int add(Position P, int number)
 		return (number + P->br);
 }
 
-int read(PosA S, Position P)
+int read(Pos S, Position P)
 {
 	if (NULL == P)
 		return SUCCESS;
 
 	read(S, P->Left);
 
-	PosA Q = NULL;
-	Q = (PosA)malloc(sizeof(stackA));
+	Pos Q = NULL;
+	Q = (Pos)malloc(sizeof(stack));
 
 	if (NULL == Q)
 	{
@@ -189,7 +179,7 @@ int read(PosA S, Position P)
 	}
 
 	Q->Next = NULL;
-	PosA temp = S;
+	Pos temp = S;
 
 	while (temp->Next != NULL)
 		temp = temp->Next;
@@ -203,38 +193,7 @@ int read(PosA S, Position P)
 	return SUCCESS;
 }
 
-int read(PosB S, Position P)
-{
-	if (NULL == P)
-		return SUCCESS;
-
-	read(S, P->Left);
-
-	PosB Q = NULL;
-	Q = (PosB)malloc(sizeof(stackB));
-
-	if (NULL == Q)
-	{
-		printf("Greska u alociranju memorije.");
-		return ERROR;
-	}
-
-	Q->Next = NULL;
-	PosB temp = S;
-
-	while (temp->Next != NULL)
-		temp = temp->Next;
-
-	Q->Next = temp->Next;
-	temp->Next = Q;
-	Q->br = P->br;
-
-	read(S, P->Right);
-
-	return SUCCESS;
-}
-
-int insertFile(char* f, PosA P)
+int insertFile(char* f, Pos P)
 {
 	FILE* file = NULL;
 	int i = 0;
@@ -256,28 +215,6 @@ int insertFile(char* f, PosA P)
 	fclose(file);
 }
 
-int insertFile(char* f, PosB P)
-{
-	FILE* file = NULL;
-	int i = 0;
-	file = fopen(f, "w");
-
-	if (NULL == file)
-	{
-		printf("Greska pri otvaranju datoteke.");
-		return ERROR;
-	}
-
-	while (i < 10)
-	{
-		fprintf(file, "%d ", P->Next->br);
-		P = P->Next;
-		i++;
-	}
-
-	fclose(file);
-}
-
 int deleteAllTree(Position P)
 {
 	if (NULL == P)
@@ -290,25 +227,15 @@ int deleteAllTree(Position P)
 	return SUCCESS;
 }
 
-int deleteAllStack(PosA P, PosB Q)
+int deleteAllStack(Pos P)
 {
-	PosA tempA = NULL;
+	Pos temp = NULL;
 	while (P->Next != NULL)
 	{
-		tempA = P->Next;
-		P->Next = tempA->Next;
-		free(tempA);
+		temp = P->Next;
+		P->Next = temp->Next;
+		free(temp);
 	}
-	free(P);
-
-	PosB tempB = NULL;
-	while (Q->Next != NULL)
-	{
-		tempB = Q->Next;
-		Q->Next = tempB->Next;
-		free(tempB);
-	}
-	free(Q);
 
 	return SUCCESS;
 }
