@@ -151,13 +151,7 @@ int add(Position P, int number)
 
 	if (number == 0)
 		return P->br;
-
-	else if (left != 0 && right == 0)
-		return (left + P->br);
-
-	else if (left == 0 && right != 0)
-		return (P->br + right);
-
+	
 	else
 		return (number + P->br);
 }
