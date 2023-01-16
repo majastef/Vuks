@@ -27,7 +27,7 @@ typedef struct list
 	Position Down;
 };
 
-int insertInList(Pos, char*, char*);
+int insertInList(Pos, char*, char*, Position);
 Position insertInTree(Position, Position);
 int cityCmp(Position, Position);
 int printList(Pos);
@@ -40,6 +40,7 @@ int main()
 	char optionName[MAX_LINE] = { 0 };
 	int optionNumber = 0;
 	Position Root = NULL;
+	Position temp = Root;
 	Pos Head = NULL;
 	Head = (Pos)malloc(sizeof(list));
 
@@ -59,6 +60,7 @@ int main()
 
 	printf("Unesi ime datoteke:");
 	scanf(" %s", file);
+	printf("\n");
 
 	f = fopen(file, "r");
 
@@ -72,10 +74,11 @@ int main()
 	{
 		fscanf(f, "%s %s", cntry, cty);
 
-		insertInList(Head, cntry, cty);
+		insertInList(Head, cntry, cty, temp);
 	}
 
 	printList(Head->Next);
+	printf("\n");
 
 	printf("Unesi ime drzave:");
 	scanf(" %s", optionName);
@@ -83,12 +86,14 @@ int main()
 	printf("Unesi broj stanovnika:");
 	scanf("%d", &optionNumber);
 
-	printOption(Head->Next, optionName, optionNumber);
+	printf("\n");
+
+	printOption(Head, optionName, optionNumber);
 
 	return SUCCESS;
 }
 
-int insertInList(Pos P, char* name, char* file)
+int insertInList(Pos P, char* name, char* file, Position temp)
 {
 	char word[MAX_LINE] = { 0 };
 	int number = 0;
@@ -97,8 +102,28 @@ int insertInList(Pos P, char* name, char* file)
 
 	if (NULL == fp)
 	{
-		printf("Greska pri otvaranju datoteke.");
-		return ERROR;
+
+		Pos Q = NULL;
+		Q = (Pos)malloc(sizeof(list));
+
+		if (NULL == Q)
+		{
+			printf("Greska pri alociranju memorije.");
+			return ERROR;
+		}
+
+		Q->Next = NULL;
+
+		while ((P->Next != NULL) && (strcmp(P->Next->country, name) < 0))
+			P = P->Next;
+
+		strcpy(Q->country, name);
+		Q->Next = P->Next;
+		P->Next = Q;
+		Q->Down = temp;
+
+		return SUCCESS;
+		//printf("Greska pri otvaranju datoteke.");
 	}
 
 	Pos Q = NULL;
@@ -112,12 +137,13 @@ int insertInList(Pos P, char* name, char* file)
 
 	Q->Next = NULL;
 
-	while ((P->Next != NULL) && (strcmp(P->country, name) > 0))
+	while ((P->Next != NULL) && (strcmp(P->Next->country, name) < 0))
 		P = P->Next;
 
 	strcpy(Q->country, name);
 	Q->Next = P->Next;
 	P->Next = Q;
+	Q->Down = temp;
 
 	while (!feof(fp))
 	{
@@ -152,10 +178,10 @@ Position insertInTree(Position R, Position N)
 
 	result = cityCmp(R, N);
 
-	if (result > 0)
+	if (result < 0)
 		R->Right = insertInTree(R->Right, N);
 
-	else if (result < 0)
+	else if (result > 0)
 		R->Left = insertInTree(R->Left, N);
 
 	else
@@ -187,6 +213,7 @@ int printList(Pos P)
 	{
 		printf("%s - ", P->country);
 		printTree(P->Down);
+		printf("\n");
 		P = P->Next;
 	}
 
@@ -199,16 +226,22 @@ int printTree(Position R)
 		return SUCCESS;
 
 	printTree(R->Left);
-	printf("%s %d, ", R->city, R->residents);
+	printf("%s %d ", R->city, R->residents);
 	printTree(R->Right);
 }
 
 int printOption(Pos P, char* name, int number)
 {
-	while (P != NULL && P->country != name)
+	while (P->Next != NULL && strcmp(P->Next->country, name) != 0)
 		P = P->Next;
 
-	printCities(P->Down, number);
+	if (NULL == P->Down)
+	{
+		printf("Ova drzava nema upisanih gradova.\n");
+		return SUCCESS;
+	}
+
+	printCities(P->Next->Down, number);
 
 	return SUCCESS;
 }
@@ -218,11 +251,11 @@ int printCities(Position R, int number)
 	if (NULL == R)
 		return SUCCESS;
 
-	if (R->residents <= number)
-		printCities(R->Right, number);
+	if (R->residents > number)
+		printf("%s %d\n", R->city, R->residents);
 
-	else if (R->residents > number)
-		printf("%s %d ", R->city, R->residents);
+	printCities(R->Left, number);
+	printCities(R->Right, number);
 
 	return SUCCESS;
 }
