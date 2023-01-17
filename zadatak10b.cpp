@@ -27,7 +27,7 @@ typedef struct tree
 	Pos Down;
 };
 
-int Read(Position, Pos, char*, char*);
+Position Read(Position, Pos, char*, char*);
 Position insertInTree(Position, Position);
 int insertInList(Pos, Pos);
 int printTree(Position);
@@ -72,7 +72,7 @@ int main()
 	{
 		fscanf(f, "%s %s", cntry, cty);
 
-		Read(Root, temp, cntry, cty);
+		Root = Read(Root, temp, cntry, cty);
 	}
 
 	printTree(Root);
@@ -91,7 +91,7 @@ int main()
 	return SUCCESS;
 }
 
-int Read(Position R, Pos temp, char* name, char* file)
+Position Read(Position R, Pos temp, char* name, char* file)
 {
 	char word[MAX_LINE] = { 0 };
 	int number = 0;
@@ -106,7 +106,6 @@ int Read(Position R, Pos temp, char* name, char* file)
 		if (NULL == Q)
 		{
 			printf("Greska pri alociranju memorije.");
-			return ERROR;
 		}
 
 		Q->Left = NULL;
@@ -116,19 +115,14 @@ int Read(Position R, Pos temp, char* name, char* file)
 
 		R = insertInTree(R, Q);
 
-		R->Down = temp;
-
-		return SUCCESS;
+		return R;
 	}
 
 	Position Q = NULL;
 	Q = (Position)malloc(sizeof(tree));
 
 	if (NULL == Q)
-	{
 		printf("Greska pri alociranju memorije.");
-		return ERROR;
-	}
 
 	Q->Left = NULL;
 	Q->Right = NULL;
@@ -136,8 +130,6 @@ int Read(Position R, Pos temp, char* name, char* file)
 	strcpy(Q->country, name);
 
 	R = insertInTree(R, Q);
-
-	R->Down = temp;
 
 	while (!feof(fp))
 	{
@@ -147,10 +139,7 @@ int Read(Position R, Pos temp, char* name, char* file)
 		New = (Pos)malloc(sizeof(list));
 
 		if (NULL == New)
-		{
 			printf("Greska pri alociranju memorije.");
-			return ERROR;
-		}
 
 		New->Next = NULL;
 		New->residents = number;
@@ -159,7 +148,7 @@ int Read(Position R, Pos temp, char* name, char* file)
 		insertInList(Q->Down, New);
 	}
 
-	return SUCCESS;
+	return R;
 }
 
 Position insertInTree(Position R, Position N)
@@ -167,10 +156,10 @@ Position insertInTree(Position R, Position N)
 	if (NULL == R)
 		return N;
 
-	if (strcmp(R->country, N->country) > 0)
+	if (strcmp(R->country, N->country) < 0)
 		R->Right = insertInTree(R->Right, N);
 
-	else if (strcmp(R->country, N->country) < 0)
+	else if (strcmp(R->country, N->country) > 0)
 		R->Left = insertInTree(R->Left, N);
 
 	else
@@ -204,10 +193,9 @@ int printTree(Position R)
 {
 	if (NULL == R)
 		return SUCCESS;
-
+		
 	printTree(R->Left);
 	printf("%s - ", R->country);
-	printList(R->Down->Next);
 	printf("\n");
 	printTree(R->Right);
 
