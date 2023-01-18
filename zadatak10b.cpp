@@ -133,7 +133,7 @@ Position Read(Position R, Pos temp, char* name, char* file)
 
 	while (!feof(fp))
 	{
-		fscanf(fp, "%s, %d", word, &number);
+		fscanf(fp, "%s %d", word, &number);
 
 		Pos New = NULL;
 		New = (Pos)malloc(sizeof(list));
@@ -177,10 +177,10 @@ int insertInList(Pos P, Pos N)
 		return SUCCESS;
 	}
 
-	while ((P->Next != NULL) && (P->Next->residents < N->residents))
+	while ((P->Next != NULL) && (P->Next->residents > N->residents))
 		P = P->Next;
 
-	while (P->Next != NULL && strcmp(P->Next->city, N->city) > 0)
+	while (P->Next != NULL && strcmp(P->Next->city, N->city) < 0)
 		P = P->Next;
 
 	N->Next = P->Next;
