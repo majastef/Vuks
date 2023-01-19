@@ -32,24 +32,17 @@ Position insertInTree(Position, Position);
 int insertInList(Pos, Pos);
 int printTree(Position);
 int printList(Pos);
+int printOption(Position, char*, int);
+int printCities(Pos, int);
+int deleteAll(Position);
+int deleteList(Pos);
 
 int main()
 {
-	//char optionName[MAX_LINE] = { 0 };
-	//int optionNumber = 0;
+	char optionName[MAX_LINE] = { 0 };
+	int optionNumber = 0;
 	Position Root = NULL;
 	Pos Head = NULL;
-	Head = (Pos)malloc(sizeof(list));
-
-	if (NULL == Head)
-	{
-		printf("Greska u alociranju memorije.");
-		return ERROR;
-	}
-
-	Head->Next = NULL;
-	//Root->Down = Head;
-	Pos temp = Head;
 
 	char file[MAX] = { 0 };
 	char cntry[MAX_LINE] = { 0 };
@@ -72,26 +65,28 @@ int main()
 	{
 		fscanf(f, "%s %s", cntry, cty);
 
-		Root = Read(Root, temp, cntry, cty);
+		Root = Read(Root, Head, cntry, cty);
 	}
 
 	printTree(Root);
 	printf("\n");
 
-	//printf("Unesi ime drzave:");
-	//scanf(" %s", optionName);
+	printf("Unesi ime drzave:");
+	scanf(" %s", optionName);
 
-	//printf("Unesi broj stanovnika:");
-	//scanf("%d", &optionNumber);
+	printf("Unesi broj stanovnika:");
+	scanf("%d", &optionNumber);
 
-	//printf("\n");
+	printf("\n");
 
-	//printOption(Head, optionName, optionNumber);
+	printOption(Root, optionName, optionNumber);
+
+	deleteAll(Root);
 
 	return SUCCESS;
 }
 
-Position Read(Position R, Pos temp, char* name, char* file)
+Position Read(Position R, Pos P, char* name, char* file)
 {
 	char word[MAX_LINE] = { 0 };
 	int number = 0;
@@ -100,17 +95,17 @@ Position Read(Position R, Pos temp, char* name, char* file)
 
 	if (NULL == fp)
 	{
+		P = (Pos)malloc(sizeof(list));
 		Position Q = NULL;
 		Q = (Position)malloc(sizeof(tree));
 
-		if (NULL == Q)
-		{
+		if (NULL == Q && NULL == P)
 			printf("Greska pri alociranju memorije.");
-		}
 
+		P->Next = NULL;
 		Q->Left = NULL;
 		Q->Right = NULL;
-		Q->Down = temp;
+		Q->Down = P;
 		strcpy(Q->country, name);
 
 		R = insertInTree(R, Q);
@@ -118,15 +113,17 @@ Position Read(Position R, Pos temp, char* name, char* file)
 		return R;
 	}
 
+	P = (Pos)malloc(sizeof(list));
 	Position Q = NULL;
 	Q = (Position)malloc(sizeof(tree));
 
-	if (NULL == Q)
+	if (NULL == Q && NULL == P)
 		printf("Greska pri alociranju memorije.");
 
+	P->Next = NULL;
 	Q->Left = NULL;
 	Q->Right = NULL;
-	Q->Down = temp;
+	Q->Down = P;
 	strcpy(Q->country, name);
 
 	R = insertInTree(R, Q);
@@ -180,8 +177,11 @@ int insertInList(Pos P, Pos N)
 	while ((P->Next != NULL) && (P->Next->residents > N->residents))
 		P = P->Next;
 
-	while (P->Next != NULL && strcmp(P->Next->city, N->city) < 0)
-		P = P->Next;
+	if (P->Next != NULL && P->Next->residents == N->residents)
+	{
+		while (P->Next != NULL && strcmp(P->Next->city, N->city) > 0)
+			P = P->Next;
+	}
 
 	N->Next = P->Next;
 	P->Next = N;
@@ -193,9 +193,10 @@ int printTree(Position R)
 {
 	if (NULL == R)
 		return SUCCESS;
-		
+
 	printTree(R->Left);
 	printf("%s - ", R->country);
+	printList(R->Down->Next);
 	printf("\n");
 	printTree(R->Right);
 
@@ -214,6 +215,61 @@ int printList(Pos P)
 	{
 		printf("%s %d ", P->city, P->residents);
 		P = P->Next;
+	}
+
+	return SUCCESS;
+}
+
+int printOption(Position R, char* name, int number)
+{
+	if (NULL == R)
+		return SUCCESS;
+
+	if (strcmp(R->country, name) < 0)
+		printOption(R->Right, name, number);
+
+	else if (strcmp(R->country, name) > 0)
+		printOption(R->Left, name, number);
+
+	else
+		printCities(R->Down->Next, number);
+
+	return SUCCESS;
+}
+
+int printCities(Pos P, int number)
+{
+	while (P != NULL)
+	{
+		if (P->residents > number)
+			printf("%s\n", P->city);
+		P = P->Next;
+	}
+
+	return SUCCESS;
+}
+
+int deleteAll(Position R)
+{
+	if (NULL == R)
+		return SUCCESS;
+
+	deleteAll(R->Left);
+	deleteAll(R->Right);
+	deleteList(R->Down);
+	free(R->Down);
+	free(R);
+	return SUCCESS;
+}
+
+int deleteList(Pos P)
+{
+	Pos temp = NULL;
+	while (P->Next != NULL)
+	{
+		temp = P->Next;
+		P->Next = temp->Next;
+		free(temp);
 	}
 
 	return SUCCESS;
