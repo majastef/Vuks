@@ -34,6 +34,8 @@ int printList(Pos);
 int printTree(Position);
 int printOption(Pos, char*, int);
 int printCities(Position, int);
+int deleteAll(Pos);
+int deleteTree(Position);
 
 int main()
 {
@@ -89,6 +91,9 @@ int main()
 	printf("\n");
 
 	printOption(Head, optionName, optionNumber);
+
+	deleteAll(Head);
+	free(Head);
 
 	return SUCCESS;
 }
@@ -256,6 +261,32 @@ int printCities(Position R, int number)
 
 	printCities(R->Left, number);
 	printCities(R->Right, number);
+
+	return SUCCESS;
+}
+
+int deleteAll(Pos P)
+{
+	Pos temp = NULL;
+	while (P->Next != NULL)
+	{
+		temp = P->Next;
+		P->Next = temp->Next;
+		deleteTree(temp->Down);
+		free(temp);
+	}
+
+	return SUCCESS;
+}
+
+int deleteTree(Position R)
+{
+	if (NULL == R)
+		return SUCCESS;
+
+	deleteTree(R->Left);
+	deleteTree(R->Right);
+	free(R);
 
 	return SUCCESS;
 }
